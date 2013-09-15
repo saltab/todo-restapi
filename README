@@ -1,0 +1,13 @@
+Author: Saurabh Talbar
+
+Todo Application Rest API:
+
+This project intends to demonstrate basic CRUD operations as per the RESTful standards.
+The source code is built using Apache Maven.
+Technologies used in this project:
+# Java
+# Jersey 2.2
+# mongodb 2.4.6
+# morphia 0.104
+# grizzly 2
+# maven 2.5.1
