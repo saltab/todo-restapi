@@ -24,7 +24,8 @@ Steps/Notes to execute the code:
 3. Start elasticsearch daemon using, bin/elasticsearch
 4. cd <path-to-project-dir>
 5. mvn clean test
-6. mvn exec:java >> Now this will start your todo backend service at htttp://localhost:9998/todo/
+6. mvn exec:java >> Now this will start your todo backend service at 
+	htttp://localhost:9998/todo/
 
 7. To add items to our todo-app run e.g.: 
 	curl -i -X POST -H "Content-Type:application/json" -d \
@@ -35,8 +36,8 @@ Steps/Notes to execute the code:
 	curl -i -X DELETE -H "Content-Type:application/json" \
 	http://localhost:9998/todo/items/home
 
-9. You can play around and add more items to app, they will be automatically indexed in our 
-	local elasticsearch cluster.
+9. You can play around and add more items to app, they will be automatically 
+	indexed in our local elasticsearch cluster.
 
 10. To search for an item, run: 
 	
