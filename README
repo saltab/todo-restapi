@@ -14,24 +14,40 @@ Technologies used in this project:
 # ElasticSearch 1.1.0
 # io.searchbox Jest 0.1.0
 # Jersey-JSON 1.18
+# Twilio Java SDK - 3.4.1
 
-Steps to execute the code:
+Check the pom.xml file for all the Maven repo details
+
+Steps/Notes to execute the code:
 1. Make sure Maven is installed
 2. Start mongo daemon using mongod
 3. Start elasticsearch daemon using, bin/elasticsearch
 4. cd <path-to-project-dir>
 5. mvn clean test
 6. mvn exec:java >> Now this will start your todo backend service at htttp://localhost:9998/todo/
+
 7. To add items to our todo-app run e.g.: 
-	curl -i -X POST -H "Content-Type:application/json" -d 
-	'{"title" : "home","body" : "home sweet home","done":true}' http://localhost:9998/todo/items/
+	curl -i -X POST -H "Content-Type:application/json" -d \
+	'{"title" : "home","body" : "home sweet home","done":true}' \
+	http://localhost:9998/todo/items/
+
 8. To delete this item: 
-	curl -i -X DELETE -H "Content-Type:application/json" http://localhost:9998/todo/items/home
+	curl -i -X DELETE -H "Content-Type:application/json" \
+	http://localhost:9998/todo/items/home
+
 9. You can play around and add more items to app, they will be automatically indexed in our 
 	local elasticsearch cluster.
+
 10. To search for an item, run: 
-	curl -i -X POST -H "Content-Type:application/json" -d '{"title" : "homework","body" : "tomorrow","done":false}' 
+	
+	curl -i -X POST -H "Content-Type:application/json" -d \
+	'{"title" : "homework","body" : "tomorrow","done":false}' \
 	http://localhost:9998/todo/items/search
+	
 	This will return the items matching with title "homework"
 11. For better productivity and simplicity, you can install POSTMAN plugin from Chrome's webstore and use it to make
 	REST API requests
+
+Update: When a task will be marked as Done, a SMS will be sent to the destination number.
+You need to provide the destination number & source number for this feature to work in the
+TwilioTest class.

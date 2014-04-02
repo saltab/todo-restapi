@@ -6,6 +6,7 @@ package com.db;
 
 import io.searchbox.core.Index;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,6 +20,7 @@ import com.model.ItemBean;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.service.App;
+import com.twilio.sdk.TwilioRestException;
 
 public class MongoOps {
 	private MongoClient mongo;
@@ -30,7 +32,13 @@ public class MongoOps {
 	final String doneKey = "done";
 	// please change the name to your appropriate db name
 	final String dbName = "mongo-items-db-6";
-
+	
+	String postMessage = "curl -X POST 'https://api.twilio.com/2010-04-01/Accounts/ACc4dc56710567a3daada7493a2d8fcc1c/Messages.json' " +
+			"--data-urlencode 'To=+19049105497' " +
+			"--data-urlencode 'From=+12252284707' " +
+			"--data-urlencode 'Body=hello from twilio api' " +
+			"-u ACc4dc56710567a3daada7493a2d8fcc1c:df7a149d7ce62259e79012d05a2ab28c";
+	
 	public MongoOps() {
 		try {
 			// lets create the mongoclient and connect our Morphius ORM to
@@ -131,8 +139,27 @@ public class MongoOps {
 		ops = ds.createUpdateOperations(ItemBean.class)
 				.set(bodyKey, item.getBody()).set(doneKey, item.getDone());
 		ds.update(updateQuery, ops);
-
+		
+		if(item.getDone())
+			try {
+				App.twilioService.postMessage(item.getTitle());
+				System.out.println("Task Done!Message sent to user");
+			} catch (TwilioRestException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		System.out.println("Item with title: " + item.getTitle() + " updated!");
+	}
+	
+	public void postTwilioMessage(){
+		try {
+			Runtime.getRuntime().exec(postMessage);
+			System.out.println("Message posted via Twilio!");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
