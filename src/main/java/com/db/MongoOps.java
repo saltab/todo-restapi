@@ -30,7 +30,7 @@ public class MongoOps {
 	final String doneKey = "done";
 	// please change the name to your appropriate db name
 	final String dbName = "mongo-items-db-6";
-	
+
 	public MongoOps() {
 		try {
 			// lets create the mongoclient and connect our Morphius ORM to
@@ -59,13 +59,12 @@ public class MongoOps {
 			try {
 				// item.setId(++App.id_track);
 				ds.save(item);
-				Index index = new Index.Builder(item)
-				.index("testindex2")
-				.type(App.searchly.getIndexType()).build();
+				Index index = new Index.Builder(item).index("testindex2")
+						.type(App.searchly.getIndexType()).build();
 				App.searchly.execute(index);
-				System.out.println("Item "+item.getTitle()+" indexed!");
-				System.out.println("Index URI: "+index.getURI());
-				System.out.println("Index: "+index.getIndex());
+				System.out.println("Item " + item.getTitle() + " indexed!");
+				System.out.println("Index URI: " + index.getURI());
+				System.out.println("Index: " + index.getIndex());
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -76,7 +75,7 @@ public class MongoOps {
 		} else
 			this.update(item);
 		System.out
-		.println("Item with title: " + item.getTitle() + " inserted!");
+				.println("Item with title: " + item.getTitle() + " inserted!");
 	}
 
 	public ItemBean get(String title) {
@@ -131,8 +130,8 @@ public class MongoOps {
 		ops = ds.createUpdateOperations(ItemBean.class)
 				.set(bodyKey, item.getBody()).set(doneKey, item.getDone());
 		ds.update(updateQuery, ops);
-		
-		if(item.getDone())
+
+		if (item.getDone())
 			try {
 				App.twilioService.postMessage(item.getTitle());
 				System.out.println("Task Done!Message sent to user");
@@ -140,7 +139,7 @@ public class MongoOps {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
+
 		System.out.println("Item with title: " + item.getTitle() + " updated!");
 	}
 

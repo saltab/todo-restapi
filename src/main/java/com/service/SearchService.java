@@ -1,9 +1,5 @@
 package com.service;
 
-/**
- * @author Saurabh Talbar (saurabh.talbar at gmail.com)
- */
-
 import io.searchbox.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -31,11 +27,11 @@ public class SearchService {
 	private String indexName = "itemsindex";
 	private String testIndexName = "testindex2";
 	private String indexType = "items";
-	private String itemsJson = "{\"items\": {\"properties\": {\"body\": " +
-			"{\"type\": \"string\"},\"done\": {\"type\": \"boolean\"},\"title\": " +
-			"{\"type\": \"string\"},\"mid\": {\"properties\":{\"_inc\":	" +
-			"{\"type\": \"long\"},\"_machine\":	{\"type\": \"long\"},\"_new\":	" +
-			"{\"type\": \"boolean\"},\"_time\":	{\"type\": \"long\"}}}}}}";
+	private String itemsJson = "{\"items\": {\"properties\": {\"body\": "
+			+ "{\"type\": \"string\"},\"done\": {\"type\": \"boolean\"},\"title\": "
+			+ "{\"type\": \"string\"},\"mid\": {\"properties\":{\"_inc\":	"
+			+ "{\"type\": \"long\"},\"_machine\":	{\"type\": \"long\"},\"_new\":	"
+			+ "{\"type\": \"boolean\"},\"_time\":	{\"type\": \"long\"}}}}}}";
 
 	public SearchService() {
 		try {
@@ -47,11 +43,12 @@ public class SearchService {
 			 * 
 			 * // Construct a new Jest client according to configuration via //
 			 * factory JestClientFactory factory = new JestClientFactory();
-			 * factory.setClientConfig(clientConfig); 
-			 * client = factory.getObject();
+			 * factory.setClientConfig(clientConfig); client =
+			 * factory.getObject();
 			 */
-			
-			// Assuming that ElasticSearch instance is running at: http://localhost:9200
+
+			// Assuming that ElasticSearch instance is running at:
+			// http://localhost:9200
 			JestClientFactory factory = new JestClientFactory();
 			factory.setHttpClientConfig(new HttpClientConfig.Builder(
 					"http://localhost:9200").multiThreaded(true).build());
@@ -69,11 +66,8 @@ public class SearchService {
 			client.execute(new CreateIndex.Builder(testIndexName).settings(
 					settingsBuilder.build().getAsMap()).build());
 
-			PutMapping putMapping = new PutMapping.Builder(
-					testIndexName,
-					indexType,
-					itemsJson)
-			.build();
+			PutMapping putMapping = new PutMapping.Builder(testIndexName,
+					indexType, itemsJson).build();
 			client.execute(putMapping);
 
 			System.out.println("Index: " + testIndexName + " created");
@@ -112,17 +106,15 @@ public class SearchService {
 		try {
 
 			System.out
-			.println("Received request to search for param: " + param);
+					.println("Received request to search for param: " + param);
 			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 			searchSourceBuilder.query(QueryBuilders.matchQuery("title", param));
 
 			Search search = new Search.Builder(searchSourceBuilder.toString())
-												.addIndex("testindex2")
-												.addType("items")
-												.build();
+					.addIndex("testindex2").addType("items").build();
 
 			JestResult result = client.execute(search);
-			
+
 			System.out.println("JestResult Error: " + result.getErrorMessage());
 			System.out.println("JestResult Hits: " + result);
 			System.out.println("JestResult boolean: " + result.isSucceeded());

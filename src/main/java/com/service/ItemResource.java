@@ -47,10 +47,10 @@ public class ItemResource {
 
 		if (query == null)
 			return new ArrayList<ItemBean>(null);
-		
+
 		ArrayList<ItemBean> searchResults = new ArrayList<ItemBean>(
 				App.searchly.searchItems(query.getTitle()));
-		
+
 		return searchResults;
 	}
 
@@ -111,5 +111,5 @@ public class ItemResource {
 		return Response.status(200)
 				.entity("Item: " + title + " deleted successfully").build();
 	}
-	 
+
 }

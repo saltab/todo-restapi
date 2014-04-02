@@ -29,7 +29,7 @@ public class App {
 	protected static MongoOps mongoInstance;
 	// singleton instance of searchly service [ElasticSearch as a Service]
 	public static SearchService searchly;
-	
+
 	public static TwilioTest twilioService;
 	// Base URI the Grizzly HTTP server will listen on
 	protected static final URI BASE_URI = URI
@@ -46,13 +46,13 @@ public class App {
 
 			// initialize mongodb driver
 			mongoInstance = new MongoOps();
-			
+
 			// initilaize searchly
 			searchly = new SearchService();
-			
+
 			// initialize twiliotest
 			twilioService = new TwilioTest();
-			
+
 			System.out.println(String
 					.format("Application started.%nApplication URL: "
 							+ BASE_URI));
@@ -73,7 +73,7 @@ public class App {
 
 	@Provider
 	final static class JsonMoxyConfigurationContextResolver implements
-	ContextResolver<MoxyJsonConfig> {
+			ContextResolver<MoxyJsonConfig> {
 
 		public MoxyJsonConfig getContext(Class<?> objectType) {
 			final MoxyJsonConfig configuration = new MoxyJsonConfig();
