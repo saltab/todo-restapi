@@ -45,9 +45,9 @@ Steps/Notes to execute the code:
 	http://localhost:9998/todo/items/search
 	
 	This will return the items matching with title "homework"
+
 11. For better productivity and simplicity, you can install POSTMAN plugin from Chrome's webstore and use it to make
 	REST API requests
 
 Update: When a task will be marked as Done, a SMS will be sent to the destination number.
-You need to provide the destination number & source number for this feature to work in the
-TwilioTest class.
+You need to provide the destination number & source number for this feature to work in the TwilioTest class.
