@@ -39,8 +39,7 @@ public class ItemResource {
 	public Response getItem(@PathParam("title") String title) {
 
 		if (title == null || title.trim().length() == 0)
-			return Response.serverError().entity("title cannot be blank")
-					.build();
+			return bad_request;
 
 		if (App.mongoInstance.contains(title))
 			// return App.mongoInstance.get(title);
@@ -106,7 +105,7 @@ public class ItemResource {
 	@DELETE
 	@Path("{title}")
 	public Response deleteItem(@PathParam("title") String title) {
-		if (title == null)
+		if (title == null || title == "")
 			return bad_request;
 		if (!App.mongoInstance.contains(title))
 			return not_found;
