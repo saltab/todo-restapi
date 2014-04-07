@@ -36,9 +36,9 @@ public class App {
 
 	public static Logger appLogger = LoggerFactory.getLogger(App.class);
 
-	public final static String ITEM_CREATED = "Item created succssfully";
-	public final static String ITEM_DELETED = "Item deleted succssfully";
-	public final static String ITEM_UPDATED = "Item updated succssfully";
+	public final static String ITEM_CREATED = "Item created successfully";
+	public final static String ITEM_DELETED = "Item deleted successfully";
+	public final static String ITEM_UPDATED = "Item updated successfully";
 
 	public static void main(String[] args) {
 		try {
