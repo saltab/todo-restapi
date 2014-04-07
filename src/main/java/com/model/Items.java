@@ -11,6 +11,9 @@ import java.util.ArrayList;
 public class Items {
 	List<ItemBean> items;// = new ArrayList<ItemBean>();
 
+	public Items() {
+	}
+	
 	public Items(List<ItemBean> list) {
 		this.items = new ArrayList<ItemBean>(list);
 	}

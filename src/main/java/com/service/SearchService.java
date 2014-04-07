@@ -12,12 +12,12 @@ import io.searchbox.indices.mapping.PutMapping;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.model.ItemBean;
 
@@ -33,6 +33,8 @@ public class SearchService {
 			+ "{\"type\": \"long\"},\"_machine\":	{\"type\": \"long\"},\"_new\":	"
 			+ "{\"type\": \"boolean\"},\"_time\":	{\"type\": \"long\"}}}}}}";
 
+	private static Logger esLogger = LoggerFactory.getLogger(SearchService.class);
+	
 	public SearchService() {
 		try {
 			// Configuration of JestClient
@@ -53,10 +55,10 @@ public class SearchService {
 			factory.setHttpClientConfig(new HttpClientConfig.Builder(
 					"http://localhost:9200").multiThreaded(true).build());
 			client = factory.getObject();
-
+			
 			// create an index
 			client.execute(new CreateIndex.Builder(testIndexName).build());
-
+			
 			// ElasticSearch settings
 			ImmutableSettings.Builder settingsBuilder = ImmutableSettings
 					.settingsBuilder();
@@ -70,11 +72,11 @@ public class SearchService {
 					indexType, itemsJson).build();
 			client.execute(putMapping);
 
-			System.out.println("Index: " + testIndexName + " created");
+			esLogger.info("Index: " + testIndexName + " created");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
+			esLogger.debug("Elastic Search Exception", e);
 		}
 	}
 
@@ -98,15 +100,10 @@ public class SearchService {
 		return client.execute(action);
 	}
 
-	public void execute() {
-
-	}
-
 	public List<ItemBean> searchItems(String param) {
 		try {
 
-			System.out
-					.println("Received request to search for param: " + param);
+			esLogger.info("Received request to search for param: " + param);
 			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 			searchSourceBuilder.query(QueryBuilders.matchQuery("title", param));
 
@@ -115,16 +112,17 @@ public class SearchService {
 
 			JestResult result = client.execute(search);
 
-			System.out.println("JestResult Error: " + result.getErrorMessage());
-			System.out.println("JestResult Hits: " + result);
-			System.out.println("JestResult boolean: " + result.isSucceeded());
+			esLogger.error("JestResult Error: " + result.getErrorMessage());
+			esLogger.info("JestResult Hits: " + result);
 
 			return result.getSourceAsObjectList(ItemBean.class);
 
 		} catch (IOException e) {
 			e.printStackTrace();
+			esLogger.debug("Search exception", e);
 		} catch (Exception e) {
 			e.printStackTrace();
+			esLogger.debug("Search Exception",e);
 		}
 		return null;
 	}

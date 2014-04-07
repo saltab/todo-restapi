@@ -6,15 +6,18 @@ package com.db;
 
 import io.searchbox.core.Index;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.google.code.morphia.query.Query;
 import com.google.code.morphia.query.UpdateOperations;
 import com.model.ItemBean;
+import com.model.Items;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.service.App;
@@ -24,15 +27,17 @@ public class MongoOps {
 	private MongoClient mongo;
 	private Datastore ds;
 	private Morphia morphling;
+	private static Logger mongoLogger = LoggerFactory.getLogger(MongoOps.class);
 
 	final String titleKey = "title";
 	final String bodyKey = "body";
 	final String doneKey = "done";
 	// please change the name to your appropriate db name
-	final String dbName = "mongo-items-db-6";
+	final String dbName = "mongo-items-db";
 
 	public MongoOps() {
 		try {
+
 			// lets create the mongoclient and connect our Morphius ORM to
 			// MongoDB
 			mongo = new MongoClient("localhost", 27017);
@@ -45,11 +50,13 @@ public class MongoOps {
 			// your entities
 			ds.ensureCaps(); // creates capped collections from @Entity
 
-			System.out.println("DB: " + dbName + " created");
+			// System.out.println("DB: " + dbName + " created");
+			mongoLogger.info("DB: " + dbName + " created");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (MongoException m) {
 			m.printStackTrace();
+			mongoLogger.debug("mongoLogger", m);
 		}
 
 	}
@@ -62,20 +69,15 @@ public class MongoOps {
 				Index index = new Index.Builder(item).index("testindex2")
 						.type(App.searchly.getIndexType()).build();
 				App.searchly.execute(index);
-				System.out.println("Item " + item.getTitle() + " indexed!");
-				System.out.println("Index URI: " + index.getURI());
-				System.out.println("Index: " + index.getIndex());
-
+				mongoLogger.info("Item " + item.getTitle() + " indexed!");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				Logger.getLogger(MongoOps.class.getName()).log(Level.SEVERE,
-						null, e);
+				mongoLogger.debug("Exception", e);
 			}
 
 		} else
 			this.update(item);
-		System.out
-				.println("Item with title: " + item.getTitle() + " inserted!");
+		mongoLogger.info("Item with title: " + item.getTitle() + " inserted!");
 	}
 
 	public ItemBean get(String title) {
@@ -84,19 +86,21 @@ public class MongoOps {
 			item = ds.find(ItemBean.class).field(titleKey).equal(title).get();
 
 		if (item.getTitle().contentEquals(title))
-			System.out.println("Item with title: " + title + " found!");
+			mongoLogger.info("Item with title: " + title + " found!");
 		else
-			System.out.println("Item with title: " + title + " NOT found!");
+			mongoLogger.info("Item with title: " + title + " NOT found!");
 
 		return item;
 	}
 
-	public List<ItemBean> getAll(String title) {
-		if (title != null)
-			return ds.find(ItemBean.class).field(titleKey).equal(title)
-					.asList();
-		else
-			return null;
+	public Items getAllItems() {
+		Items items = new Items();
+		List<ItemBean> allItems = new ArrayList<ItemBean>();
+
+		for (ItemBean item : ds.find(ItemBean.class))
+			allItems.add(item);
+		items.setItems(allItems);
+		return items;
 	}
 
 	public boolean contains(String title) {
@@ -115,9 +119,9 @@ public class MongoOps {
 			Query<ItemBean> deleteQuery = ds.createQuery(ItemBean.class)
 					.field(titleKey).equal(title);
 			ds.delete(deleteQuery);
-			System.out.println("Item with title: " + title + " deleted!");
+			mongoLogger.info("Item with title: " + title + " deleted!");
 		} else {
-			System.out.println("Item with title: " + title
+			mongoLogger.info("Item with title: " + title
 					+ " cannot be found in the database to delete");
 		}
 	}
@@ -134,13 +138,14 @@ public class MongoOps {
 		if (item.getDone())
 			try {
 				App.twilioService.postMessage(item.getTitle());
-				System.out.println("Task Done!Message sent to user");
+				mongoLogger.info("Task Done!Message sent to user");
 			} catch (TwilioRestException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				mongoLogger.debug("TwilioService Exception", e);
 			}
 
-		System.out.println("Item with title: " + item.getTitle() + " updated!");
+		mongoLogger.info("Item with title: " + item.getTitle() + " updated!");
 	}
 
 }

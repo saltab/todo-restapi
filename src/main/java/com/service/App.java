@@ -4,6 +4,8 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.moxy.json.MoxyJsonConfig;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.db.MongoOps;
 import com.service.SearchService;
@@ -12,9 +14,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
@@ -26,20 +25,24 @@ public class App {
 
 	// only one and one instance of mongo should be present in the application
 	// instance
-	protected static MongoOps mongoInstance;
+	public static MongoOps mongoInstance;
 	// singleton instance of searchly service [ElasticSearch as a Service]
 	public static SearchService searchly;
 
-	public static TwilioTest twilioService;
+	public static TwilioService twilioService;
 	// Base URI the Grizzly HTTP server will listen on
-	protected static final URI BASE_URI = URI
+	public static final URI BASE_URI = URI
 			.create("http://localhost:9998/todo/");
-	//
-	public static long id_track = 0;
+
+	public static Logger appLogger = LoggerFactory.getLogger(App.class);
+
+	public final static String ITEM_CREATED = "Item created succssfully";
+	public final static String ITEM_DELETED = "Item deleted succssfully";
+	public final static String ITEM_UPDATED = "Item updated succssfully";
 
 	public static void main(String[] args) {
 		try {
-			System.out.println("TODO App server api demo");
+			appLogger.info("todo app server api demo");
 
 			final HttpServer server = GrizzlyHttpServerFactory
 					.createHttpServer(BASE_URI, createApp());
@@ -47,22 +50,24 @@ public class App {
 			// initialize mongodb driver
 			mongoInstance = new MongoOps();
 
-			// initilaize searchly
+			// initialize search service
 			searchly = new SearchService();
 
-			// initialize twiliotest
-			twilioService = new TwilioTest();
+			// initialize twilio service
+			twilioService = new TwilioService();
 
-			System.out.println(String
+			appLogger.info(String
 					.format("Application started.%nApplication URL: "
 							+ BASE_URI));
-			System.out.println("Hit enter to stop it...");
+			appLogger.info("Hit enter to stop it...");
 			System.in.read();
 			server.stop();
 		} catch (IOException ex) {
-			Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+			//appLogger.log(Level.SEVERE, null, ex);
+			appLogger.debug("IOException", ex);
+			
 		} catch (Exception e) {
-			Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
+			appLogger.debug("Exception", e);
 		}
 	}
 
